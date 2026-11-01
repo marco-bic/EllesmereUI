@@ -242,6 +242,7 @@ local defaults = {
             powerPercentX = 0,
             powerPercentY = 0,
             powerPercentPowerColor = true,
+            powerClassColored = false,
             powerBgPowerColored = false,
             powerPercentTextPowerColor = false,
             manaRegenSpark = false,  -- WoW Forever: mana regen spark while the bar shows mana; manaRegenSparkMode "ticks" = Regen Ticks, nil = 5-Second Rule
@@ -512,6 +513,7 @@ local defaults = {
             powerPercentX = 0,
             powerPercentY = 0,
             powerPercentPowerColor = true,
+            powerClassColored = false,
             powerBgPowerColored = false,
             powerPercentTextPowerColor = false,
             healthClassColored = true,
@@ -943,6 +945,7 @@ local defaults = {
             powerPercentX = 0,
             powerPercentY = 0,
             powerPercentPowerColor = true,
+            powerClassColored = false,
             powerBgPowerColored = false,
             powerPercentTextPowerColor = false,
             healthClassColored = true,
@@ -2568,5 +2571,6 @@ EllesmereUI.NewInternals(ns, "_internals", {
     ApplyBarGradient = ApplyBarGradient, ApplyHealthBarTexture = ApplyHealthBarTexture,
     ApplyHealthBarAlpha = ApplyHealthBarAlpha, ApplyPowerBarAlpha = ApplyPowerBarAlpha,
     SpecHasClassPower = SpecHasClassPower, UF_SecretSafeHealthColor = UF_SecretSafeHealthColor,
+    ClassColorSourceUnit = ClassColorSourceUnit,
     dbSetters = { function(v) db = v end },
 }, { SetDB = "dbSetters" })
