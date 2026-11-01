@@ -146,22 +146,32 @@ local function CancelStopTimer()
     if _stopTimer then _stopTimer:Cancel(); _stopTimer = nil end
 end
 
+-- Optional chat line when auto logging starts or stops (off by default).
+local function Notify(started)
+    if Cfg().notify ~= true then return end
+    local msg = started and EllesmereUI.L("AutoLog Started") or EllesmereUI.L("AutoLog Stopped")
+    EllesmereUI.Print(EllesmereUI.COLOR_CODES.BRAND .. "EllesmereUI:|r " .. msg)
+end
+
 local function ApplyLoggingState()
     local shouldLog = ZoneShouldBeLogged()
     if shouldLog then
         CancelStopTimer()
         EnsureAdvancedLogging()
+        local already = LoggingCombat()
         LoggingCombat(true)
+        if not already then Notify(true) end
     elseif wasLogging and LoggingCombat() then
         local c = Cfg()
         local delay = GetTrigger(c, "delaystop")
         if delay and not _stopTimer then
             _stopTimer = C_Timer.NewTimer(STOP_DELAY_SECONDS, function()
                 _stopTimer = nil
-                if LoggingCombat() then LoggingCombat(false) end
+                if LoggingCombat() then LoggingCombat(false); Notify(false) end
             end)
         elseif not delay then
             LoggingCombat(false)
+            Notify(false)
         end
     end
     wasLogging = shouldLog

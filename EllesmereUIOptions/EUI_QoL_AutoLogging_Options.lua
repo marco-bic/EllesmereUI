@@ -324,7 +324,14 @@ local function BuildAutoLoggingPage(pageName, parent, yOffset)
           setValue = function(v)
               Cfg().delaystop = v
           end },
-        { type = "label", text = "" }
+        { type    = "toggle",
+          text    = "Chat Notification",
+          tooltip = "Prints a chat message when auto logging starts or stops.",
+          -- Off by default.
+          getValue = function() return Cfg().notify == true end,
+          setValue = function(v)
+              Cfg().notify = v or nil
+          end }
     ); y = y - h
     end   -- close Auto Logging hidden-while-disabled gate
 
