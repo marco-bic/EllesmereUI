@@ -1701,8 +1701,9 @@ ns.ApplyCastBarTexture = function(castbar, texKey)
     -- statusbar art BLANK on plain overlay textures (negative synthetic
     -- fileID, healthy alpha/rect/shown readbacks -- measured in-game
     -- 2026-08-12, the invisible-interrupt-shield report), so re-pointing it
-    -- at the art killed the shield entirely. A flat wash tints the textured
-    -- fill below it; SetAlphaFromBoolean keeps driving it secret-safe.
+    -- at the art killed the shield entirely. Only Blizzard Style still shows
+    -- that wash; elsewhere ApplyUnitFrameCastColor folds the uninterruptible
+    -- colour into the textured tint layer and base fill instead.
 end
 
 -- Cast bar Fill Opacity (player/target/focus). Below 100 the active-cast tint layer
@@ -1714,9 +1715,10 @@ end
 -- (relational anchors + plain alphas only), so secret cast states render identically.
 -- castbar._castTintOn mirrors "the last alpha we wrote to castTintLayer was
 -- above zero". It exists because castTintLayer:GetAlpha() cannot be trusted to
--- return a plain number: this castbar also drives _shieldedTint's alpha from
--- the SECRET notInterruptible flag (SetAlphaFromBoolean), and once secrecy is
--- in a castbar's render state an alpha read comes back secret. Comparing that
+-- return a plain number: this castbar's tint layer and base fill take colours
+-- folded from the SECRET notInterruptible flag (and Blizzard Style drives the
+-- shield's alpha from it), and once secrecy is in a castbar's render state an
+-- alpha read comes back secret. Comparing that
 -- inside our own (tainted) execution throws "attempt to compare a secret number
 -- value", which aborts the whole styling pass mid-way and leaves the cast bar
 -- unanchored at screen centre. We write every one of these alphas ourselves, so
