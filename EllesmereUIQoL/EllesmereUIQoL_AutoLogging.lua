@@ -42,7 +42,7 @@ local RAID_DIFF_KEYS = {
     [14]  = "logNormal",
 }
 
--- Defaults: everything on except Scenarios.
+-- Defaults: everything on except Scenarios and the rated battleground rows.
 local TRIGGER_DEFAULTS = {
     logMythic   = true,
     logHeroic   = true,
@@ -51,6 +51,8 @@ local TRIGGER_DEFAULTS = {
     log5pp      = true,
     logArena    = true,
     logScenario = false,
+    logRBG      = false,
+    logBlitz    = false,
     delaystop   = true,
 }
 
@@ -87,6 +89,18 @@ local function ZoneShouldBeLogged()
     if EllesmereUI.IS_FOREVER then
         if zoneType == "raid" then return GetTrigger(c, "logNormal") end
         if zoneType == "party" then return c.logDungeon == true end
+        return false
+    end
+
+    -- Rated battlegrounds: Blitz (rated solo BG) is checked first so it never
+    -- falls through to the RBG row. Unrated battlegrounds do not log.
+    if zoneType == "pvp" and C_PvP then
+        if C_PvP.IsRatedSoloRBG and C_PvP.IsRatedSoloRBG() then
+            return GetTrigger(c, "logBlitz")
+        end
+        if C_PvP.IsRatedBattleground and C_PvP.IsRatedBattleground() then
+            return GetTrigger(c, "logRBG")
+        end
         return false
     end
 
@@ -157,6 +171,11 @@ local events = {
     ZONE_CHANGED_NEW_AREA = function() C_Timer.After(2, ApplyLoggingState) end,
     CHALLENGE_MODE_START   = function() C_Timer.After(1, ApplyLoggingState) end,
 }
+-- Retail: re-check when a battleground match goes live, in case the rated /
+-- Blitz flags were not yet set when the zone-in check ran.
+if not EllesmereUI.IS_FOREVER then
+    events.PVP_MATCH_ACTIVE = function() ApplyLoggingState() end
+end
 
 -- Zone events are registered only while the feature is enabled, so a disabled
 -- feature costs nothing on zone changes. The options toggle calls
