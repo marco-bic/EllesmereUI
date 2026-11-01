@@ -655,12 +655,27 @@ local function ApplyUnitFrameCastColor(castbar)
             r, g, b = baseTint.r, baseTint.g, baseTint.b
         end
     end
+    local uc = (settings and settings.castbarUninterruptibleColor) or UF_UNINTERRUPT_GREY
+    local ev = C_CurveUtil and C_CurveUtil.EvaluateColorValueFromBoolean
+    if ev and not castbar._blizzCast then
+        -- Uninterruptible colour folded into the textured tint layer (the
+        -- nameplates' approach), so the bar texture stays visible; the flat
+        -- shield wash below would cover it. The fold is secret-safe; explicit
+        -- vertex alpha for the same reason as the shield below.
+        local uninterruptible = GetCastbarUninterruptible(castbar)
+        r = ev(uninterruptible, uc.r, r)
+        g = ev(uninterruptible, uc.g, g)
+        b = ev(uninterruptible, uc.b, b)
+        castbar.castTintLayer:SetVertexColor(r, g, b, 1)
+        if castbar._shieldHost then castbar._shieldHost:SetAlpha(0) end
+        return
+    end
     castbar.castTintLayer:SetVertexColor(r, g, b)
     if castbar._shieldedTint then
         -- Uninterruptible overlay colour (defaults to grey). Its alpha is toggled
         -- from the secret "not interruptible" flag, so the colour is always set and
-        -- only becomes visible on uninterruptible casts.
-        local uc = (settings and settings.castbarUninterruptibleColor) or UF_UNINTERRUPT_GREY
+        -- only becomes visible on uninterruptible casts. Blizzard Style (tint
+        -- layer hidden) and clients without the colour fold keep this wash.
         -- Explicit vertex alpha: Midnight's 3-arg SetVertexColor leaves the
         -- vertex alpha at an unexpected value (measured 0.5 with the gray
         -- default -- GetVertexColor returned a=r), and the composite with the
