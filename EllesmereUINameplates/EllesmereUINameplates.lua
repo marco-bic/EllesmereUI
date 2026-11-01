@@ -286,6 +286,8 @@ local defaults = {
     friendlyBelowNameColor = { r = 0.8, g = 0.8, b = 0.8 },
     friendlyBelowNameClassColor = false,
     friendlyBelowNameGuildBrackets = true,
+    friendlyShowLevel = false,
+    friendlyLevelDiffColor = false,
     showEnemyPets = false,
     font = "Interface\\AddOns\\EllesmereUI\\media\\fonts\\Expressway.TTF",
     textSlotTop = "enemyName",

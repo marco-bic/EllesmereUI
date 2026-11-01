@@ -327,6 +327,21 @@ local function BuildGeneralPage(pageName, parent, yOffset)
                         DB().friendlyNameFormat = v
                         ns.NP_SyncFriendlyNameFormat()
                     end),
+                { type = "toggle", label = "Show Level",
+                  get = function() return DBVal("friendlyShowLevel") == true end,
+                  set = function(v)
+                    DB().friendlyShowLevel = v and true or false
+                    if ns.RefreshFriendlyBelowName then ns.RefreshFriendlyBelowName() end
+                  end },
+                { type = "toggle", label = "Color Level by Difficulty",
+                  disabled = function() return DBVal("friendlyShowLevel") ~= true end,
+                  disabledTooltip = "This option requires Show Level",
+                  rawTooltip = true,
+                  get = function() return DBVal("friendlyLevelDiffColor") == true end,
+                  set = function(v)
+                    DB().friendlyLevelDiffColor = v and true or false
+                    if ns.RefreshFriendlyBelowName then ns.RefreshFriendlyBelowName() end
+                  end },
                 { type = "toggle", label = "Show <> Around Guild",
                   disabled = subtitleGuildOff,
                   disabledTooltip = "This option requires Subtitle Text to include the Guild Name",
