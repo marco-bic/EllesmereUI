@@ -739,18 +739,33 @@ local function ApplyRFDispelSlot(button, dd, style)
         tex:SetVertexColor(1, 1, 1, 1)
     end
 
-    -- Type-colored border around the health bar.
+    -- Type-colored border around the health bar. One shared level for every type
+    -- (unit button + LVL_RAISE - 1, strips + 10): over the base border strips (+9),
+    -- under the hover/target/aggro raise (strips +11) and the text band (LVL_TEXT).
+    -- A per-type level offset pushed Magic/Curse/Disease over the name and role
+    -- icon; the type priority rides the strips' OVERLAY sublevel instead, like
+    -- the overlay's ARTWORK sublevel above.
     if (style.borderSize or 0) > 0 and PP then
         if not dd.borderHost then
             dd.borderHost = CreateFrame("Frame", nil, button)
             dd.borderHost:SetAllPoints(health)
         end
-        dd.borderHost:SetFrameLevel(health:GetFrameLevel() + 6 + def.level)
+        local ub = dd.rfUnitBtn
+        local bLvl = (ub and ub:GetFrameLevel() or health:GetFrameLevel() - 2) + ns.LVL_RAISE - 1
+        -- Change-guarded, stamped after the writes, like dd.lvl above.
+        local relevel = dd.bLvl ~= bLvl
+        if relevel then dd.borderHost:SetFrameLevel(bLvl) end
         if dd.borderMade then
             PP.UpdateBorder(dd.borderHost, style.borderSize, r, g, b, typeA)
         else
-            PP.CreateBorder(dd.borderHost, r, g, b, typeA, style.borderSize, "OVERLAY", 7)
+            PP.CreateBorder(dd.borderHost, r, g, b, typeA, style.borderSize, "OVERLAY", 2 + def.level)
             dd.borderMade = true
+        end
+        if relevel then
+            -- The strips' PP container keeps the level it was created at.
+            local ppC = PP.GetBorders(dd.borderHost)
+            if ppC then ppC:SetFrameLevel(bLvl + 1) end
+            dd.bLvl = bLvl
         end
         dd.borderHost:Show()
     elseif dd.borderHost then
@@ -1833,8 +1848,8 @@ local function BmEffectInit(button, dd, style, ind, health)
         local unitButton = button:GetParent() and button:GetParent():GetParent()
         if unitButton then
             -- Slot button sits AT the unit button's level: legacy renderer
-            -- (BM_ApplyEffectBorder) levels the host at parent+11 (static)/+14
-            -- (sweep) -- exact live parity.
+            -- (BM_ApplyEffectBorder) levels the host at parent + LVL_RAISE - 1,
+            -- under the hover raise and the text band -- exact live parity.
             button:SetFrameLevel(unitButton:GetFrameLevel())
             dd.borderHost = CreateFrame("Frame", nil, button)
             -- The Party Frames kit outlines the visible party frame (our
