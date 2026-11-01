@@ -2069,6 +2069,8 @@ do
         "tooltipItemLevel", "tooltipMythicScore", "tooltipShowMount",
         "tooltipShowGuildRank", "tooltipShowTarget", "tooltipShowMode",
         "tooltipShowModifier", "tooltipGrowthDirection",
+        "tooltipLevelColor", "tooltipClassLineColor", "tooltipFactionColor",
+        "tooltipGuildmateColor", "tooltipCompactLevel", "tooltipAFKTag",
         "uberTooltips", "uberTooltipsManual", "tooltipHideHealthStrip",
         "tooltipHealthStripTexture", "tooltipHealthStripHeight",
         "tooltipAnchorCursor", "tooltipCursorPosition",
