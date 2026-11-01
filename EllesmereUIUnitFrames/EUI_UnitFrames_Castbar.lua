@@ -1121,6 +1121,7 @@ local function CreateCastBar(frame, unit, settings)
     castbar._tgtSide  = settings.castSpellTargetSide or "right"
     castbar._durSide  = settings.castDurationSide or "right"
     castbar._showDuration = settings.showCastDuration ~= false
+    castbar._fullCraft = settings.castFullCraftTime == true
     castbar._showTarget = settings.showCastTarget ~= false
     castbar._layoutTextZones = LayoutCastTextZones
     LayoutCastTextZones(castbar)
@@ -1139,6 +1140,7 @@ local function CreateCastBar(frame, unit, settings)
         self._tgtSide  = s.castSpellTargetSide or "right"
         self._durSide  = s.castDurationSide or "right"
         self._showDuration = s.showCastDuration ~= false
+        self._fullCraft = s.castFullCraftTime == true
         if self._layoutTextZones then self:_layoutTextZones() end
     end
 
@@ -1261,6 +1263,10 @@ local function CreateCastBar(frame, unit, settings)
             return
         end
         time:Show()
+        if self._craftExtra and durationObject then
+            EllesmereUI.SetCraftTimerText(self, time, durationObject:GetRemainingDuration(), false)
+            return
+        end
         if durationObject then
             -- The engine calls this only when the shown tenth can have changed
             -- (CastOnUpdate paces it), so every call formats. SetFormattedText

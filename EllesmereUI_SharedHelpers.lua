@@ -1068,3 +1068,55 @@ do
     end
     EllesmereUI.SyncPortraitClick = Sync
 end
+
+-------------------------------------------------------------------------------
+--  Full Craft Time (player cast bars). A repeat craft queues the rest of the
+--  batch behind the current cast. SetCraftBatch fills f._craftExtra (seconds
+--  queued after this cast), the batch total and the " (n/N)" name suffix, or
+--  clears them when on is false or the cast is not part of a batch. Done
+--  counts finished casts so the total stays fixed; a re-read of the same cast
+--  (settings refresh mid-cast) keeps the batch as is.
+-------------------------------------------------------------------------------
+do
+    local floor, format = math.floor, string.format
+
+    function EllesmereUI.SetCraftBatch(f, on, spellID, castID, castDur)
+        local getLeft = C_TradeSkillUI and C_TradeSkillUI.GetRemainingRecasts
+        if not (on and getLeft) then
+            f._craftExtra, f._craftLeft = nil, nil
+            return
+        end
+        local left = getLeft() or 0
+        if castID and castID == f._craftCast then
+            left = f._craftLeft or left
+        elseif f._craftLeft and spellID == f._craftSpell and left == f._craftLeft - 1 then
+            f._craftDone = f._craftDone + 1
+        else
+            f._craftDone = 0
+        end
+        f._craftLeft, f._craftSpell, f._craftCast = left, spellID, castID
+        if left == 0 and f._craftDone == 0 then
+            f._craftExtra = nil
+            return
+        end
+        local done = f._craftDone
+        local total = floor((done + 1 + left) * castDur)
+        f._craftExtra = left * castDur
+        f._craftTotal = total
+        f._craftTotalSuffix = format(" / %d:%02d", floor(total / 60), total % 60)
+        f._craftCountSuffix = format(" (%d/%d)", done + 1, done + 1 + left)
+        f._craftSecs = nil
+    end
+
+    -- Whole batch left (or elapsed / total), repainted once per second.
+    function EllesmereUI.SetCraftTimerText(f, fs, remaining, totalMode)
+        local left = (remaining > 0 and remaining or 0) + f._craftExtra
+        local secs = floor(totalMode and (f._craftTotal - left) or left)
+        if secs < 0 then secs = 0 end
+        if secs ~= f._craftSecs then
+            f._craftSecs = secs
+            fs:SetText(format("%d:%02d", floor(secs / 60), secs % 60)
+                .. (totalMode and f._craftTotalSuffix or ""))
+        end
+    end
+end
