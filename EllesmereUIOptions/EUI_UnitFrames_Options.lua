@@ -1966,6 +1966,7 @@ initFrame:SetScript("OnEvent", function(self)
         castbarKickTickEnabled     = { target=true, focus=true },
         castbarImportantGlow       = { target=true, focus=true },
         castCombineNameTarget      = { target=true, focus=true },
+        castFullCraftTime          = { player=true },
         showClassPowerBar    = { player=true },
         lockClassPowerToFrame= { player=true },
         classPowerStyle      = { player=true },

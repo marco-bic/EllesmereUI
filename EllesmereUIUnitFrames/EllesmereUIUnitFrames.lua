@@ -389,6 +389,7 @@ local defaults = {
             castSpellNameColor = { r = 1, g = 1, b = 1 },
             castDurationSize = 10,
             castDurationColor = { r = 1, g = 1, b = 1 },
+            castFullCraftTime = false,  -- Duration counts down the whole repeat-craft batch
             castSpellNameX = 0,
             castSpellNameY = 0,
             castSpellTargetSize = 11,
