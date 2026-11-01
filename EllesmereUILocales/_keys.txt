@@ -252,6 +252,8 @@ At the application limit, clicking a group cancels your oldest pending applicati
 Augment Rune
 Auto Assign to Specs
 Auto Split
+AutoLog Started
+AutoLog Stopped
 Automatic (Client)
 Azuremyst Isle
 BUG FIXES
